@@ -103,15 +103,14 @@
         routes          (into {} (map route-to-data-row route-data))
         missing-routes  (apply dissoc routes (keys test-routes))
         extra-routes    (apply dissoc test-routes (keys routes))
-        missing-methods (->> routes
-                             (map
-                               (fn [[route methods]]
-                                 (let [route-methods  (set methods)
-                                       tested-methods (set (keys (get test-routes route)))
-                                       missing        (set/difference route-methods tested-methods)]
-                                   (when (and (get test-routes route) (not-empty missing))
-                                     [route missing]))))
-                             (filter some?))]
+        missing-methods (keep
+                          (fn [[route methods]]
+                            (let [route-methods  (set methods)
+                                  tested-methods (set (keys (get test-routes route)))
+                                  missing        (set/difference route-methods tested-methods)]
+                              (when (and (get test-routes route) (not-empty missing))
+                                [route missing])))
+                          routes)]
 
     (is (= 0 (count missing-routes))
         (str "The following routes are not tested: \n - "
