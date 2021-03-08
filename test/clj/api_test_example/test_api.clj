@@ -3,7 +3,6 @@
     [api-test-example.handler :as handler]
     [clojure.test :refer [deftest testing is]]
     [reitit.core :as reitit-core]
-    [reitit.impl :as reitit-impl]
     [clojure.set :as set]
     [clojure.string :as string]))
 
@@ -99,7 +98,7 @@
   [route (keys (select-keys properties [:get :post :put :patch :delete :options]))])
 
 (deftest all-paths-tested
-  (let [route-data      (reitit-impl/resolve-routes handler/api (reitit-core/default-router-options))
+  (let [route-data      (reitit.core/routes (reitit.core/router handler/api))
         routes          (into {} (map route-to-data-row route-data))
         missing-routes  (apply dissoc routes (keys test-routes))
         extra-routes    (apply dissoc test-routes (keys routes))
